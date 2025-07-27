@@ -1,0 +1,377 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "server",
+        "version": "0.0.0",
+        "contact": {}
+    },
+    "paths": {
+        "/auth/publicKey": {
+            "get": {
+                "summary": "Получает публичный ключ шифрования",
+                "description": "Требуется для шифрования логина + пароля.\nЯвляется ассиметричным ключом, как правило в RSA формате.",
+                "parameters": [],
+                "operationId": "getPublicKey",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Description",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/checkAuth": {
+            "get": {
+                "summary": "Проверяет авторизацию",
+                "description": "Проверяет авторизацию по логину + паролю, зашифрованном при помощи publicKey.\n1. Собирается raw строка по принципу: \"логин:пароль\"\n2. Шифруется публичным ключем.\n3. Отправляется в качестве Bearer заголовка.",
+                "parameters": [],
+                "operationId": "checkAuth",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Хеадер авторизации не передан, либо является некорректным ",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пара логин + пароль указана неверно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/car": {
+            "summary": "CRUD",
+            "get": {
+                "summary": "Получает список автомобилей по фильтру",
+                "description": "В качестве запроса указывается query по name и/или brand, либо ничего - тогда найдет все документы в базе данных.",
+                "parameters": [
+                    {
+                        "name": "brand",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Бренд автомобиля в его схематике."
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Название автомобиля в его схематике."
+                    }
+                ],
+                "operationId": "getCars",
+                "responses": {
+                    "200": {
+                        "description": "Массив со схематиками автомобилей",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/Car"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пара логин + пароль указана неверно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "post": {
+                "summary": "Создает новый документ автомобиля",
+                "description": "Создает новый документ автомобиля, если не находит автомобиля по указанному name & brand.",
+                "parameters": [],
+                "operationId": "postCar",
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка либо при валидации тела запроса, либо данный документ уже существует",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пара логин + пароль указана неверно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Неизвестная ошибка в базе-данных",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Car"
+                            }
+                        }
+                    },
+                    "description": "В теле запроса указывается полная схематика документа автомобиля"
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "summary": "Создает или заменяет документ автомобиля",
+                "description": "Создает новый документ автомобиля, либо заменяет существующий, если находит его по name & brand.",
+                "parameters": [],
+                "operationId": "putCar",
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка при валидации тела запроса",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пара логин + пароль указана неверно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Неизвестная ошибка в базе-данных",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Car"
+                            }
+                        }
+                    },
+                    "description": "В теле запроса указывается полная схематика документа автомобиля"
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "summary": "Удаляет документ автомобиля",
+                "description": "Удаляет автомобили по указанному названию и/или бренду.",
+                "parameters": [],
+                "operationId": "deleteCar",
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Не переданы необходимые данные в теле запроса",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пара логин + пароль указана неверно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    },
+                    "description": "В теле запроса указывается название и/или бренд автомобиля."
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "summary": "Изменяет существующий документ автомобиля.",
+                "description": "Находит и изменяет существующий документ автомобиля.\nНаходит по объекту \"search\", который содержит в себе название и/или бренд автомобиля.\nИзменяет поля найденного документа на поля, переданные в объекте \"update\".",
+                "parameters": [],
+                "operationId": "patchCar",
+                "responses": {
+                    "200": {
+                        "description": "Все хорошо",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Не передано тело запроса \"search\", либо \"name\"/\"brand\" в \"search\", либо не передано тело запроса \"update\", либо документ с автомобилем не найден.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пара логин + пароль указана неверно",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Произошла неизвестная ошибка в базе-данных",
+                        "content": {
+                            "text/plain": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    },
+                    "description": "В объекте \"search\" содержится название и/или бренд автомобиля для поиска документа.\nВ объекте \"update\" содержатся данные для замены найденного документа."
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        }
+    },
+    "security": [],
+    "servers": [],
+    "components": {
+        "links": {},
+        "callbacks": {},
+        "schemas": {
+            "Car": {
+                "type": "object",
+                "properties": {
+                    "brand": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "xml": {
+                    "name": "Car"
+                }
+            }
+        },
+        "securitySchemes": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
+}

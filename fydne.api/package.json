@@ -1,0 +1,15 @@
+{
+  "name": "fydne.api",
+  "version": "0.0.0",
+  "main": "init.js",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "country-locale-map": "^1.8.13",
+    "express": "^4.18.2",
+    "ipinfo": "^1.5.1",
+    "mongoose": "^7.4.1"
+  }
+}
